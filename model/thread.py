@@ -14,7 +14,7 @@ class Thread(QThread):
 
     def run(self):
         self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FPS, 30)  # not working on MACOS
+        self.cap.set(cv2.CAP_PROP_FPS, 30)  # no funciona en MacOS
 
         faceRec = FaceRecognition(self.con, self.customLog)
         while True:
@@ -31,6 +31,6 @@ class Thread(QThread):
 
     def destroy(self):
         # TODO
-        # Какая-то ошибка из-за неправильного завершения приложения
+        # Algún tipo de error debido a la terminación incorrecta de la aplicación
         self.cap.release()
         cv2.destroyAllWindows()

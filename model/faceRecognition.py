@@ -20,7 +20,7 @@ class FaceRecognition:
         self.face_names = []
         self.setUpUsers(con, customLog)
         self.frameCount = 0
-        self.pulse = "Processing..."
+        self.pulse = "Procesando..."
         self.heartBeatCount = 250
         self.heartBeatTimes = [time.time()] * self.heartBeatCount
         self.heartBeatValues = [0] * self.heartBeatCount
@@ -29,7 +29,7 @@ class FaceRecognition:
 
     def setUpUsers(self, con, customLog):
         """
-        Задает список пользователей.
+        Establece la lista de usuarios.
         """
         info = createDB.getAllInfo(con)
         pathToTemp = "../temp/"
@@ -44,7 +44,7 @@ class FaceRecognition:
             user_face_encoding = face_recognition.face_encodings(user_image)
 
             if not user_face_encoding:
-                customLog.appendPlainText("Can't find face in image")
+                customLog.appendPlainText("No puede encontrar rostros en la imagen")
                 continue
             else:
                 user_face_encoding = user_face_encoding[0]
@@ -56,7 +56,7 @@ class FaceRecognition:
 
     def resize(self, frame):
         """
-        Изменение формата для более быстрого определения лиц на камере
+        Cambio de forato para una detección más rápida de los rostros en la cámara
         """
         self.small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
@@ -72,7 +72,7 @@ class FaceRecognition:
         self.face_names = []
         for face in face_encodings:
             matches = face_recognition.compare_faces(self.known_face_encodings, face)
-            name = "Unknown"
+            name = "Desconocido"
             face_distances = face_recognition.face_distance(self.known_face_encodings, face)
             if np.any(face_distances):
                 best_match_index = np.argmin(face_distances)
@@ -107,7 +107,7 @@ class FaceRecognition:
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             cv2.rectangle(frame, (left - 1, bottom), (right + 1, bottom + 36), (0, 0, 255), cv2.FILLED)
 
-            # Coordinates for color grabber
+            # Coordenadas del capturador de color
             gx = ((right - left) / 2) + left - (right - left) / 4
             gy = bottom - ((bottom - top) / 5)
 

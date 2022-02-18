@@ -25,7 +25,7 @@ def pulseCapturing():
 
     compressing_rate = 4
 
-    # saving these values for next iterations
+    # Guardar valores para futuras iteraciones
     gx, gy, gw, gh = 100, 100, 100, 100
     while True:
         count_frames += 1
@@ -35,18 +35,18 @@ def pulseCapturing():
         rgb_small_frame = small_frame[:, :, ::-1]
 
         face_locations = []
-        # Only process every other frame of video to save time
+        # Procesamiento de otros cuadros de video para ahorrar tiempo
         if not count_frames % 10:
-            # Find all the faces and face encodings in the current frame of video
+            # Encontrar todos los rostros en el cuadro actual de video
             face_locations = face_recognition.face_locations(rgb_small_frame)
             print(face_locations)
 
         for (top, right, bottom, left) in face_locations:
 
-            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            # Ajustar el tamaño del localizador de rostros dado que el inicial era de 1/4
             top *= compressing_rate; right *= compressing_rate; bottom *= compressing_rate; left *= compressing_rate
 
-            # Coordinates for color grabber
+            # Coordenadas del capturador de color
             gx = ((right - left) / 2) + left - (right - left) / 4
             gy = bottom - ((bottom - top) / 5)
 
@@ -55,7 +55,7 @@ def pulseCapturing():
 
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
-        # Our operations on the frame come here
+        # Operación en el recuadro
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         crop_img = img[int(gy - gh):int(gy), int(gx):int(gx + gw)]
@@ -64,7 +64,7 @@ def pulseCapturing():
         heartbeat_times = heartbeat_times[1:] + [time.time()]
 
         '''
-        # Запись в pulseDataRaw показателя пульса и времени
+        # Registrar los valores crudos de frecuencia cardíaca
         if (count_frames % 250 == 0):
             itc = 0
             tempd = pd.DataFrame({
@@ -78,7 +78,7 @@ def pulseCapturing():
             print(str(len(heartbeat_values)) + " = len(heartbeat_values")
             print(str(getPulse_cutLowFreq(heartbeat_times, heartbeat_values)) + " = pulse")
 
-        # Display the frame in both windows
+        # Mostrar el recuadro en ambas ventanas
         # cv2.imshow('Crop', crop_img)
         cv2.imshow('Main', img)
 

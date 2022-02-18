@@ -51,16 +51,16 @@ def PCA_exp():
 
 
 def getPulse_simplePeaks(timeData: list, pulseData: list):
-    # Сколько секунд между началом и концом записи
+    # Cuántos segundos hay entre el inicio y el final de la grabación
     elapsedTime = timeData[-1] - timeData[0]
 
-    # Частота записи, сколько значений в секунду - Герцы
+    # Frecuencia de grabación, cuántos valores por segundo - Hertz
     curr_hz = len(pulseData)/elapsedTime
 
-    # Нормализация
+    # Normalización
     pulseDataТ = normalizeData(pulseData)
 
-    # Подсчёт количества пиков на графике
+    # Contar el número de picos en el gráfico
     peaks, _ = find_peaks(pulseDataТ, distance=4)
     
     pulse = len(peaks)*(60/curr_hz)
@@ -70,16 +70,16 @@ def getPulse_simplePeaks(timeData: list, pulseData: list):
 def getPulse_cutLowFreq(timeData: list, pulseData: list, currentPulse):
     normalizeData(pulseData)
 
-    # using two unix times from start and end
+    # utilizando dos tiempos unix de inicio y fin
     elapsedTime = timeData[-1] - timeData[0]
 
-    # sample rate
+    # frecuencia de muestreo
     fs = len(pulseData)/elapsedTime
 
-    # frequency which we should throw out using filtering
+    # frecuencia que debemos desechar mediante el filtrado
     lowcut = (fs / 3) - 1
 
-    # cutting off low probability results
+    # quitar los resultados de baja probabilidad
     max_bpm = 170
     max_bpm_per_sec = max_bpm / fs
     max_beats_spreading_in_one_sec = int(fs / max_bpm_per_sec) - 1
@@ -88,11 +88,11 @@ def getPulse_cutLowFreq(timeData: list, pulseData: list, currentPulse):
         return getPulse_cutLowFreq_ex()
 
     filteredPulseData = pulseData
-    # Из-за ошибки в библиотечной функции, пришлось обходить ее.
-    if currentPulse is 'Processing...':
+    # Debido a un error en la función de la biblioteca, tuvo que ser omitido.
+    if currentPulse is 'Procesando..':
         filteredPulseData = butter_highpass_filter(pulseData, lowcut, fs=fs, order=4)
 
-    # основная настройка гиперпараметров здесь
+    # ajuste básico de hiperparámetros aquí
     peaks, _ = find_peaks(filteredPulseData, distance=param)
     newPulse = int(len(peaks) * 60 / fs)
     if str(currentPulse).isnumeric():
@@ -116,19 +116,19 @@ def getPulse_cutLowFreq_ex():
 
         pulseDataN = normalizeData(pulseData)
 
-        # using two unix times from start and end
+        # utilizando dos tiempos unix de inicio y fin
         elapsedTime = timeData[-1] - timeData[0]
     
-        # sample rate
+        # frecuencia de muestreo
         fs = len(pulseData)/elapsedTime
 
-        # frequency which we should throw out using filtering
+        # frecuencia que debemos desechar mediante el filtrado
         lowcut = (fs / 3) - 1
 
         #plt.figure(1)
         #plt.clf()
 
-        # cutting off low probability results
+        # cortar los resultados de baja probabilidad
         max_bpm = 170
         max_bpm_per_sec = max_bpm / fs
         max_beats_spreading_in_one_sec = int(fs / max_bpm_per_sec) - 1
@@ -139,7 +139,7 @@ def getPulse_cutLowFreq_ex():
 
         #plt.plot(timeData, filteredPulseData, label='Filtered signal')
 
-        # основная настройка гиперпараметров здесь
+        # ajuste básico de hiperparámetros aquí
         peaks, _ = find_peaks(filteredPulseData, distance=max_beats_spreading_in_one_sec)
         #print("Pulse is:", int(len(peaks)*(60/fs)))
         ret += len(peaks) * 60 / fs
@@ -150,7 +150,7 @@ def getPulse_cutLowFreq_ex():
         #plt.axis('tight')
         #plt.legend(loc='upper left')
 
-        # Показывать вспомогательные plot - для наглядности вычислений
+        # Mostrar gráfico auxiliar - para aclarar los cálculos
         #plt.show()
     if not ret:
         return None
@@ -158,7 +158,7 @@ def getPulse_cutLowFreq_ex():
 
 
 def getPulse_enchanced_ex2():
-    # Провал: для такого фильтра нужна большая частота считывания сигнала
+    # Fallo: un filtro de este tipo requiere una alta frecuencia de lectura de la señal
     files = os.listdir(path="../pulseDataRaw")
 
     for filename in files:
@@ -168,15 +168,15 @@ def getPulse_enchanced_ex2():
         timeData = rawData['x'].to_list()
         pulseData = rawData['y'].to_list()
         
-        # using two unix times from start and end
+        # utilizando dos tiempos unix de inicio y fin
         elapsedTime = timeData[-1] - timeData[0]
     
-        # sample rate
+        # frecuencia de muestreo
         #fs = len(pulseData)/elapsedTime
     
         fs = 20
 
-        # frequencies which we should throw out using filtering
+        # frecuencias que debemos desechar mediante el filtrado
         lowcut = 5
         highcut = 7
 
@@ -200,12 +200,12 @@ def getPulse_enchanced_ex():
     import matplotlib.pyplot as plt
     from scipy.signal import freqz
 
-    # Sample rate and desired cutoff frequencies (in Hz).
+    # Velocidad de muestreo y frecuencias de corte deseadas (en Hz).
     fs = 5000.0
     lowcut = 500.0
     highcut = 1250.0
 
-    # Plot the frequency response for a few different orders.
+    # Traza la respuesta en frecuencia para unos cuantos órdenes diferentes.
     plt.figure(1)
     plt.clf()
     for order in [3, 6, 9]:
@@ -220,7 +220,7 @@ def getPulse_enchanced_ex():
     plt.grid(True)
     plt.legend(loc='best')
 
-    # Filter a noisy signal.
+    # Filtrar una señal ruidosa.
     T = 0.05
     nsamples = T * fs
     t = np.linspace(0, T, int(nsamples), endpoint=False)
@@ -246,9 +246,9 @@ def getPulse_enchanced_ex():
 
 
 def exampleFunc():
-    # example method which working with data from ./pulseDataRaw directory
-    # there are located the most quality data collected using PPG or BCG
-    # method using web camera
+    # método de ejemplo que trabaja con datos del directorio ./pulseDataRaw
+    # allí se encuentran los datos de mayor calidad recogidos mediante PPG o BCG
+    # método que utiliza la cámara web
     files = os.listdir(path="../pulseDataRaw")
 
     for filename in files:
@@ -273,8 +273,8 @@ def exampleFunc():
         plt.plot(pulseData)
         
         # plt.plot(peaks, pulseData2[peaks], "x")
-        # не знаю почему, но штука выше не работает, хотя в документации описана
-        # Я её заменил просто циклом по peaks, расположенным ниже
+        # Lo de arriba no funciona
+        # Se sustituye por  un ciclo simple
 
         for i in range(len(peaks)):
             plt.plot(peaks[i], pulseData[peaks[i]], "x")
@@ -287,39 +287,41 @@ def getPulse(heartBeatTimes, heartBeatValues, currentPulse):
 
 
 '''
-    в качестве данных по каждому графику мы получаем данные по двум осям:
-    1 - условные единицы, представляющие значения сложной величины, по изменению
-    которой мы определяем частоту пульса человека
-    2 - время, в которое было зафиксировано одно соответствующее по индексу
-    значение, в формате unix-time (или количество секунд от 1.1.1970)
+    como datos para cada gráfico, obtenemos datos en dos ejes:
+    1 - las unidades condicionales, que representan los valores de la cantidad compleja, por el cambio en
+    que determinamos la frecuencia cardíaca de una persona
+    2 - tiempo, en el que hemos registrado un valor correspondiente al índice
+    valor, en formato de tiempo unix (o número de segundos desde 1.1.1970)
         
-    В .csv файлах три колонки: индекс | время | значение случайной величины
+    Hay tres columnas en los archivos .csv: índice | tiempo | valor de la variable aleatoria
         
-    Небольшая техническая ремарка: величина названа СЛОЖНОЙ, потому-что представляет
-    собой значение, полученное на основе цветовых характеристик изображения с применением
-    различных методов. Мы можем использовать как получение среднего цвета какой-то части 
-    изображения в ЧБ тонах, так и значение только лишь зелёного канала, что, согласно 
-    некоторым источникам, более предпочтительно для PPG метода
+    Una pequeña nota técnica: el valor se llama AVANZADO porque representa
+    es un valor basado en las propiedades de color de la imagen utilizando
+    diferentes métodos. Podemos utilizar tanto obtener el color medio de alguna parte de la imagen en 
+    de la imagen en B/N o sólo el canal verde, que según 
+    algunas fuentes indican una preferencia por el método PPG
         
-    Что касается не PPG (фотоплетизмографии), а BCG (баллистокардиографии)
-    Эта задача более сложная, но, согласно некоторым исследования и статьям
-    имеет более большую точность, но располагает большим количеством методов
-    для фильтрации значимых данных:
-    1. Нужно выполнить задачу трекинга некоторых частей лица человека, и 
-    отслеживать перемещения вверх-вниз, по вертикальным координатам
-    (Обусловлено это тем, что голову от дыхания и от сердцебиения слегка шатает,
-    преимущественно в вертикальном направлении, эксперименты показывают, что именно
-    при считывании движений вверх-вниз шумов меньше всего, вне зависимости от гиперпараметров)
-    2. Нужно отфильтровать полученные изменения данных с течением времени по частотным
-    характеристикам. В рамках статьи берутся значения от 20 до 200 герц, так как пульс
-    лежит примерно в этом диапазоне. Досадно, что и дыхание, от влияния на результат
-    которого мы стремимся уйти, остаётся в той или иной мере после фильтрации в выбранном
-    диапазоне.
-    3. Применение PCA (Метод основных компонент, Principal component analisys).
-    Обычно он применяется в рамках уменьшения количества входных данных с помощью уничтожения
-    самого незначещего измерения данных. Здесь мы с его помощью получаем самые значащие
-    вектора данных и выявляем среди них ту, что содержит в себе большую часть данных об
-    перемещении головы из-за сердечных сокращений.
-    4. Далее, мы просто применяем алгоритм подсчёта пиков графика, параметры которого являются
-    гиперпараметрами, подбор которых производится в рамках возможных значений пульса.
+    No la PPG (fotopletismografía) sino la BCG (balistocardiografía).
+    Esta es más compleja pero según algunos estudios y artículos
+    Es más preciso pero tiene más métodos
+    para filtrar los datos significativos:
+    1. Necesitamos realizar la tarea de rastrear algunas partes de la cara de la persona, y 
+    pista arriba y abajo, a lo largo de las coordenadas verticales.
+    (Esto se debe a que la cabeza se tambalea ligeramente por la respiración y los latidos del corazón,
+    predominantemente en la dirección vertical, los experimentos han demostrado que es
+    El movimiento hacia arriba y hacia abajo es el menos ruidoso, independientemente de los hiperparámetros).
+    2. Filtrar los cambios resultantes de los datos en el tiempo por la frecuencia
+    características. Dentro de los límites del artículo, tomamos valores de 20 a 200 hercios, porque el pulso
+    se encuentra aproximadamente en este rango. Lo lamentable es que la respiración, de la que intentamos alejarnos
+    que tratamos de evitar, permanece en cierta medida después de filtrar en el
+    gama.
+    3. Aplicación del PCA (método de análisis de componentes principales).
+    Suele aplicarse como parte de la reducción de la cantidad de datos de entrada mediante la eliminación de
+    La dimensión más insignificante de los datos. Aquí lo utilizamos para obtener el
+    vectores de datos e identificar entre ellos el que contiene la mayoría de los datos sobre
+    movimiento de la cabeza debido a los latidos del corazón.
+    4. A continuación, simplemente aplicamos un algoritmo de recuento de picos en el gráfico cuyos parámetros son
+    hiperparámetros, que se seleccionan dentro de los límites de los posibles valores de la frecuencia cardíaca.
+
+Traducción realizada con la versión gratuita del traductor www.DeepL.com/Translator
 '''

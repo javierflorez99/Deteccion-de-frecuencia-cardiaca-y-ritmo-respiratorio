@@ -1,35 +1,36 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-/* this can be run with an emulated server on host:
+/* Puede ser ejecutado con un servidor emulador on host
         cd esp8266-core-root-dir
         cd tests/host
         make ../../libraries/ESP8266WebServer/examples/PostServer/PostServer
         bin/PostServer/PostServer
-   then put your PC's IP address in SERVER_IP below, port 9080 (instead of default 80):
+    Después poner la dirección IP del PC en SERVER_IP debajo, port 9080 (en lugar de default 80):
 */
 
-/* !!! THESE values you need to change on yours (local server address, essid and bssid(password) for) */
-#define SERVER_IP "http://192.168.2.100:5000/" // for example
+/* !!! Cambiar los valores por los propios (local server address, essid and bssid(password) por) */
+#define SERVER_IP "http://192.168.2.100:5000/" // por ejemplo
 
 #ifndef STASSID
 #define STASSID "name_of_your_wifi_or_ap"
 #define STAPSK  "password"
 #endif
-/* also, you can try change delay between POST requests (in case of inaccurate work set bigger value) */
+/* también, puede intentar cambiar el retardo entre las peticiones POST 
+(en caso de que el trabajo sea inexacto, establezca un valor mayor) */
 
 unsigned long lastTime = 0;
 unsigned long timerDelay = 8000;
 
-#define USE_ARDUINO_INTERRUPTS false // не работает с прерываниями, nodemcu вылетает в бесконечный -2 segfault
+#define USE_ARDUINO_INTERRUPTS false // no funciona con interrupciones, nodemcu vuela al infinito -2 segfault
 #include <PulseSensorPlayground.h>
 
 const int PULSE_INPUT = A0;
-const int PULSE_BLINK = 2;    // Pin 13 is the on-board LED
+const int PULSE_BLINK = 2;    // Pin 13 es el on-board LED
 const int PULSE_FADE = 5;
-const int THRESHOLD = 550;   // Adjust this number to avoid noise when idle
+const int THRESHOLD = 550;   //  Ajustar el número para evitar ruido con el IDLE
 PulseSensorPlayground pulseSensor;
-const int OUTPUT_TYPE = SERIAL_PLOTTER; // in debugging purposes
+const int OUTPUT_TYPE = SERIAL_PLOTTER; // Con el propósito de debuggear
 
 byte samplesUntilReport;
 const byte SAMPLES_PER_SERIAL_SAMPLE = 10;
@@ -60,12 +61,12 @@ void setup() {
   pulseSensor.setOutputType(OUTPUT_TYPE);
   pulseSensor.setThreshold(THRESHOLD);
 
-  // Skip the first SAMPLES_PER_SERIAL_SAMPLE in the loop().
+  // Ignorar los primeros SAMPLES_PER_SERIAL_SAMPLE en el loop().
   samplesUntilReport = SAMPLES_PER_SERIAL_SAMPLE;
 
   if (!pulseSensor.begin()) {
     for(;;) {
-      // Flash the led to show things didn't work.
+      // Luz led para mostrar lo que no está funcionando
       digitalWrite(PULSE_BLINK, LOW);
       delay(50);
       digitalWrite(PULSE_BLINK, HIGH);
@@ -95,21 +96,21 @@ void loop() {
       HTTPClient http;
 
       Serial.print("[HTTP] begin...\n");
-      // configure traged server and url
+      // Configurar el servidor traged y la url
       http.begin(client, SERVER_IP); //HTTP
       http.addHeader("Content-Type", "application/json");
 
       Serial.print("[HTTP] POST...\n");
-      // start connection and send HTTP header and body
+      // Iniciar connection y enviar el header y body HTTP
       String s1 = String("{\"pulse\":") + String(myBPM) + String("}");
       int httpCode = http.POST(s1);
 
-      // httpCode will be negative on error
+      // httpCode va a ser negativo en errores
       if (httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
+        // HTTP header ha sido enviador y la respuesta del Server header ya fue lidiada
         Serial.printf("[HTTP] POST... code: %d\n", httpCode);
 
-        // file found at server
+        // archivo encontrado en el servidor
         if (httpCode == HTTP_CODE_OK) {
           const String& payload = http.getString();
           Serial.println("received payload:\n<<");

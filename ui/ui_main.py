@@ -68,7 +68,7 @@ class Ui(QWidget):
 
     def appendUser(self):
         """
-        Добавляет пользователя в бд для дальнейшего отслеживания его параметров.
+        Añade un usuario a la base de datos para mantener su configuración.
         """
         userName = self.userName.text()
         # TODO
@@ -79,7 +79,7 @@ class Ui(QWidget):
 
     def pixmapToBytes(self):
         """
-        Конвертирует из QPixmap into bytes.
+        Convierte de QPixmap a bytes.
         """
         ba = QByteArray()
         buff = QBuffer(ba)
@@ -87,29 +87,29 @@ class Ui(QWidget):
         ok = self.cameraRoll.pixmap().save(buff, "PNG")
         assert ok
         pixmap_bytes = ba.data()
-        self.printLog("Converting to bytes successful!")
+        self.printLog("Conversión a bytes exitosa!")
         return pixmap_bytes
 
     def printLog(self, string):
         """
-        Печатает string into your log.
+       Imprime string en el LogIn
         :return:
         """
         self.customLog.appendPlainText(str(string))
 
     def bytesToPixmap(self, pixmapBytes):
         """
-        Конвертирует из bytes into QPixmap
+        Convierte de bytes a QPixmap
         """
         ba = QByteArray(pixmapBytes)
         pixmap = QPixmap()
         ok = pixmap.loadFromData(ba, "PNG")
         assert ok
-        self.printLog("Converting to QPixmap successful!")
+        self.printLog("Conversión a QPixmap exitosa!")
 
     def logAutoClear(self):
         """
-        Очищает QPlainText каждые 10 записей
+        Borra QPlainText cada 10 entradas
         """
         blockCount = self.customLog.blockCount()
         if blockCount > 10:
